@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Representante, Alumno, Curso, Matricula, Curriculo, Aula, Evaluacion, Asistencia, Curso_Matricula, Horario, Horario_Curso
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 class RepresentanteSerializer(serializers.ModelSerializer):
@@ -64,6 +65,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise ValidationError('El correo electrónico ya está registrado.')
+        return value
+    
     def create(self, validated_data):
         # Crea un usuario con una contraseña encriptada
         user = User.objects.create_user(

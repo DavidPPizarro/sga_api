@@ -1,9 +1,10 @@
 from django.db import models
 
+
 # Representante del alumno
 class Representante(models.Model):
     id_representante = models.AutoField(primary_key=True)
-    dni = models.CharField(max_length=8)
+    dni = models.CharField(max_length=8, unique=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     telefono = models.CharField(max_length=15)
@@ -17,9 +18,10 @@ class Alumno(models.Model):
     id_alumno = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    dni = models.CharField(max_length=8, default='')
-    fecha_nacimiento = models.DateField(auto_now_add=True)
-    fecha_inscripcion = models.DateField(auto_now_add=True)
+    dni = models.CharField(max_length=8, default='', unique=True)
+    fecha_nacimiento = models.DateField()
+    fecha_inscripcion = models.DateField()
+    #fecha_inscripcion = models.DateField(auto_now_add=True)
     direccion = models.CharField(max_length=100, default='Desconocido')
     id_representante = models.ForeignKey(Representante, on_delete=models.DO_NOTHING)
 
@@ -66,7 +68,8 @@ class Matricula(models.Model):
     id_matricula = models.AutoField(primary_key=True)
     id_alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
     id_curriculo = models.ForeignKey(Curriculo, on_delete=models.CASCADE)
-    fecha_matricula = models.DateField(auto_now=True)
+    fecha_matricula = models.DateField()
+    #fecha_matricula = models.DateField(auto_now=True)
     ESTADO_CHOICES = [
         ('activo', 'Activo'),
         ('inactivo', 'Inactivo'),
@@ -75,7 +78,7 @@ class Matricula(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')  
     
     def __str__(self):
-        return f"Matricula de {self.id_alumno} en {self.id_curso}"
+        return f"Matricula de {self.id_alumno}"
 
 # Evaluacion
 class Evaluacion(models.Model):
@@ -97,7 +100,8 @@ class Evaluacion(models.Model):
 class Asistencia(models.Model):
     id_asistencia = models.AutoField(primary_key=True)
     id_alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
-    fecha = models.DateField(auto_now_add=True)
+    fecha = models.DateField()
+    #fecha = models.DateField(auto_now_add=True)
     ESTADO_CHOICES = [
         ('asistio','Asistio'),
         ('no asistio','No Asistio'),
@@ -126,7 +130,7 @@ class Horario(models.Model):
     id_aula = models.ForeignKey(Aula, on_delete=models.CASCADE)
     
     def __str__(self):
-        return self.id_horario
+        return f"Horario {self.id_horario}: {self.dia} de {self.hora_inicio} a {self.hora_fin}"
     
 # Horario Curso
 class Horario_Curso(models.Model):
@@ -135,5 +139,5 @@ class Horario_Curso(models.Model):
     id_horario = models.ForeignKey(Horario, on_delete=models.CASCADE)
     
     def __str__(self):
-        return self.id_horario_curso
+        return f"Horario_Curso {self.id_horario_curso}: Curso {self.id_curso.id_curso} - Horario {self.id_horario.id_horario}"
 

@@ -85,10 +85,13 @@ DATABASES = {
         default='sqlite:///db.sqlite3',
         conn_max_age=600
     )
-    
-
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # O la configuración que necesites
+    ]
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
