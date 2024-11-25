@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .models import Asistencia, Aula, Curso_Matricula, Evaluacion, Horario, Horario_Curso, Representante, Alumno, Curso, Matricula, Curriculo
 from .serializers import AsistenciaSerializer, AulaSerializer, CurriculoSerializer, Curso_MatriculaSerializer, EvaluacionSerializer, Horario_CursoSerializer, HorarioSerializer, RepresentanteSerializer, AlumnoSerializer, CursoSerializer, MatriculaSerializer, UserSerializer
+from rest_framework.generics import RetrieveAPIView
+
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -76,3 +78,58 @@ class LoginView(APIView):
             return Response({"message": "Inicio de sesión exitoso."}, status=200)
         else:
             return Response({"error": "Credenciales incorrectas."}, status=400)
+        
+# Representante: Recuperar un registro único
+class RepresentanteRetrieveView(RetrieveAPIView):
+    queryset = Representante.objects.all()
+    serializer_class = RepresentanteSerializer
+
+# Alumno: Recuperar un registro único
+class AlumnoRetrieveView(RetrieveAPIView):
+    queryset = Alumno.objects.all()
+    serializer_class = AlumnoSerializer
+
+# Curso: Recuperar un registro único
+class CursoRetrieveView(RetrieveAPIView):
+    queryset = Curso.objects.all()
+    serializer_class = CursoSerializer
+
+# Matricula: Recuperar un registro único
+class MatriculaRetrieveView(RetrieveAPIView):
+    queryset = Matricula.objects.all()
+    serializer_class = MatriculaSerializer
+
+# Curriculo: Recuperar un registro único
+class CurriculoRetrieveView(RetrieveAPIView):
+    queryset = Curriculo.objects.all()
+    serializer_class = CurriculoSerializer
+
+# Aula: Recuperar un registro único
+class AulaRetrieveView(RetrieveAPIView):
+    queryset = Aula.objects.all()
+    serializer_class = AulaSerializer
+
+# Evaluacion: Recuperar un registro único
+class EvaluacionRetrieveView(RetrieveAPIView):
+    queryset = Evaluacion.objects.all()
+    serializer_class = EvaluacionSerializer
+
+# Asistencia: Recuperar un registro único
+class AsistenciaRetrieveView(RetrieveAPIView):
+    queryset = Asistencia.objects.all()
+    serializer_class = AsistenciaSerializer
+
+# Curso_Matricula: Recuperar un registro único
+class Curso_MatriculaRetrieveView(RetrieveAPIView):
+    queryset = Curso_Matricula.objects.all()
+    serializer_class = Curso_MatriculaSerializer
+
+# Horario: Recuperar un registro único
+class HorarioRetrieveView(RetrieveAPIView):
+    queryset = Horario.objects.all()
+    serializer_class = HorarioSerializer
+
+# Horario_Curso: Recuperar un registro único
+class Horario_CursoRetrieveView(RetrieveAPIView):
+    queryset = Horario_Curso.objects.all()
+    serializer_class = Horario_CursoSerializer
