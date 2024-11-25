@@ -212,14 +212,14 @@ def poblar_horarios_cursos(n=10):
 
 # Ejecutar todas las funciones
 def poblar_todos():
-    # poblar_representantes(50)
-    # poblar_alumnos(50)
-    # poblar_curriculos(3)
-    # poblar_cursos(40)
-    # poblar_aulas(30)
-    # poblar_matriculas(50)
-    # poblar_evaluaciones(10)
-    # poblar_asistencias(100)
+    poblar_representantes(50)
+    poblar_alumnos(50)
+    poblar_curriculos(3)
+    poblar_cursos(40)
+    poblar_aulas(30)
+    poblar_matriculas(50)
+    poblar_evaluaciones(10)
+    poblar_asistencias(100)
     poblar_horarios(10)
     poblar_horarios_cursos(10)
 
