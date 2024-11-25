@@ -49,7 +49,7 @@ def poblar_representantes(n=50):
             dni=fake.unique.random_int(min=10000000, max=99999999),
             nombre=fake.first_name(),
             apellido=fake.last_name(),
-            telefono=fake.phone_number(),
+            telefono=fake.phone_number()[:15],  # Asegúrate de que no exceda 15 caracteres
             direccion=fake.address()
         )
         representante.save()
@@ -185,7 +185,7 @@ def poblar_horarios(n=10):
         hora_inicio = fake.date_time_between(start_date="-1y", end_date="now")
         hora_fin = hora_inicio + timedelta(hours=random.randint(1, 3))
         horario = Horario(
-            dia=random.choice(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']),
+            dia=random.choice(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'])[:15],  # Truncar a 15 caracteres
             hora_inicio=hora_inicio,
             hora_fin=hora_fin,
             id_aula=random.choice(aulas)
