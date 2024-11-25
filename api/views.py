@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from rest_framework.views import APIView
 from rest_framework import generics
-from rest_framework.generics import RetrieveAPIView, RetrieveDestroyAPIView
+from rest_framework.generics import RetrieveAPIView, RetrieveDestroyAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.core.exceptions import ValidationError
@@ -25,6 +25,26 @@ from .serializers import (
 class CustomPagination(PageNumberPagination):
     page_size = 10
 
+    def get_paginated_response(self, data):
+        return Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_page_number(),
+            'previous': self.get_previous_page_number(),
+            'current': self.page.number,
+            'total': self.page.paginator.num_pages,
+            'results': data
+        })
+
+    def get_next_page_number(self):
+        if not self.page.has_next():
+            return None
+        return self.page.next_page_number()
+
+    def get_previous_page_number(self):
+        if not self.page.has_previous():
+            return None
+        return self.page.previous_page_number()
+        
 class RepresentanteListCreateView(generics.ListCreateAPIView):
     queryset = Representante.objects.all()
     serializer_class = RepresentanteSerializer
@@ -168,62 +188,111 @@ class HorarioRetrieveView(RetrieveAPIView):
 class Horario_CursoRetrieveView(RetrieveAPIView):
     queryset = Horario_Curso.objects.all()
     serializer_class = Horario_CursoSerializer
-
-
-       
+      
 # Representante
-class RepresentanteRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class RepresentanteRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Representante.objects.all()
     serializer_class = RepresentanteSerializer
 
 # Alumno
-class AlumnoRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class AlumnoRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Alumno.objects.all()
     serializer_class = AlumnoSerializer
 
 # Curso
-class CursoRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class CursoRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
 
 # Matricula
-class MatriculaRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class MatriculaRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Matricula.objects.all()
     serializer_class = MatriculaSerializer
 
 # Curriculo
-class CurriculoRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class CurriculoRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Curriculo.objects.all()
     serializer_class = CurriculoSerializer
 
 # Aula
-class AulaRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class AulaRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Aula.objects.all()
     serializer_class = AulaSerializer
 
 # Evaluacion
-class EvaluacionRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class EvaluacionRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Evaluacion.objects.all()
     serializer_class = EvaluacionSerializer
 
 # Asistencia
-class AsistenciaRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class AsistenciaRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Asistencia.objects.all()
     serializer_class = AsistenciaSerializer
 
 # Curso_Matricula
-class Curso_MatriculaRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class Curso_MatriculaRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Curso_Matricula.objects.all()
     serializer_class = Curso_MatriculaSerializer
 
 # Horario
-class HorarioRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class HorarioRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Horario.objects.all()
     serializer_class = HorarioSerializer
 
 # Horario_Curso
-class Horario_CursoRetrieveDestroyView(generics.RetrieveDestroyAPIView):
+class Horario_CursoRetrieveDestroyView(RetrieveDestroyAPIView):
     queryset = Horario_Curso.objects.all()
     serializer_class = Horario_CursoSerializer
     
+# Vista para actualizar Representante
+class RepresentanteUpdateView(UpdateAPIView):
+    queryset = Representante.objects.all()
+    serializer_class = RepresentanteSerializer
+
+# Vista para actualizar Alumno
+class AlumnoUpdateView(UpdateAPIView):
+    queryset = Alumno.objects.all()
+    serializer_class = AlumnoSerializer
+
+# Vista para actualizar Curriculo
+class CurriculoUpdateView(UpdateAPIView):
+    queryset = Curriculo.objects.all()
+    serializer_class = CurriculoSerializer
+
+# Vista para actualizar Curso
+class CursoUpdateView(UpdateAPIView):
+    queryset = Curso.objects.all()
+    serializer_class = CursoSerializer
+
+# Vista para actualizar Aula
+class AulaUpdateView(UpdateAPIView):
+    queryset = Aula.objects.all()
+    serializer_class = AulaSerializer
+
+# Vista para actualizar Matricula
+class MatriculaUpdateView(UpdateAPIView):
+    queryset = Matricula.objects.all()
+    serializer_class = MatriculaSerializer
+
+# Vista para actualizar Evaluacion
+class EvaluacionUpdateView(UpdateAPIView):
+    queryset = Evaluacion.objects.all()
+    serializer_class = EvaluacionSerializer
+
+# Vista para actualizar Asistencia
+class AsistenciaUpdateView(UpdateAPIView):
+    queryset = Asistencia.objects.all()
+    serializer_class = AsistenciaSerializer
+
+class Curso_MatriculaUpdateView(UpdateAPIView):
+    queryset = Curso_Matricula.objects.all()
+    serializer_class = Curso_MatriculaSerializer
+
+# Vista para actualizar Horario
+class HorarioUpdateView(UpdateAPIView):
+    queryset = Horario.objects.all()
+    serializer_class = HorarioSerializer 
     
+class Horario_CursoUpdateView(UpdateAPIView):
+    queryset = Horario_Curso.objects.all()
+    serializer_class = Horario_CursoSerializer
