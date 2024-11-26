@@ -22,88 +22,88 @@ from .serializers import (
     AlumnoSerializer, CursoSerializer, MatriculaSerializer, UserSerializer
 )
 
-class CustomPagination(PageNumberPagination):
-    page_size = 20
+# class CustomPagination(PageNumberPagination):
+#     page_size = 20
 
-    def get_paginated_response(self, data):
-        return Response({
-            'count': self.page.paginator.count,
-            'next': self.get_next_page_number(),
-            'previous': self.get_previous_page_number(),
-            'current': self.page.number,
-            'total': self.page.paginator.num_pages,
-            'results': data
-        })
+#     def get_paginated_response(self, data):
+#         return Response({
+#             'count': self.page.paginator.count,
+#             'next': self.get_next_page_number(),
+#             'previous': self.get_previous_page_number(),
+#             'current': self.page.number,
+#             'total': self.page.paginator.num_pages,
+#             'results': data
+#         })
 
-    def get_next_page_number(self):
-        if not self.page.has_next():
-            return None
-        return self.page.next_page_number()
+#     def get_next_page_number(self):
+#         if not self.page.has_next():
+#             return None
+#         return self.page.next_page_number()
 
-    def get_previous_page_number(self):
-        if not self.page.has_previous():
-            return None
-        return self.page.previous_page_number()
+#     def get_previous_page_number(self):
+#         if not self.page.has_previous():
+#             return None
+#         return self.page.previous_page_number()
         
 class RepresentanteListCreateView(generics.ListCreateAPIView):
     queryset = Representante.objects.all()
     serializer_class = RepresentanteSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 class AlumnoListCreateView(generics.ListCreateAPIView):
     queryset = Alumno.objects.all()
     serializer_class = AlumnoSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 class CursoListCreateView(generics.ListCreateAPIView):
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 class MatriculaListCreateView(generics.ListCreateAPIView):
     queryset = Matricula.objects.all()
     serializer_class = MatriculaSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
     
 class CurriculoListCreateView(generics.ListCreateAPIView):
     queryset = Curriculo.objects.all()
     serializer_class = CurriculoSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
     
 class AulaListCreateView(generics.ListCreateAPIView):
     queryset = Aula.objects.all()
     serializer_class = AulaSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
     
 class EvaluacionListCreateView(generics.ListCreateAPIView):
     queryset = Evaluacion.objects.all()
     serializer_class = EvaluacionSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 class AsistenciaListCreateView(generics.ListCreateAPIView):
     queryset = Asistencia.objects.all()
     serializer_class = AsistenciaSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 class Curso_MatriculaListCreateView(generics.ListCreateAPIView):
     queryset = Curso_Matricula.objects.all()
     serializer_class = Curso_MatriculaSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 class HorarioListCreateView(generics.ListCreateAPIView):
     queryset = Horario.objects.all()
     serializer_class = HorarioSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 class Horario_CursoListCreateView(generics.ListCreateAPIView):
     queryset = Horario_Curso.objects.all()
     serializer_class = Horario_CursoSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
     
     def perform_create(self, serializer):
         try:
