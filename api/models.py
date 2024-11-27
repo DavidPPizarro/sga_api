@@ -1,6 +1,13 @@
 from django.db import models
-
-
+from django.contrib.auth.models import User
+    
+class Teacher(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    speciality = models.CharField(max_length=150)
+    
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"
+        
 # Representante del alumno
 class Representante(models.Model):
     id_representante = models.AutoField(primary_key=True)
@@ -53,6 +60,15 @@ class Curso(models.Model):
     
     def __str__(self):
         return self.nombre
+
+class Materia (models.Model):
+    id_materia = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    id_course = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    id_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.name
 
 # Aula
 class Aula(models.Model):

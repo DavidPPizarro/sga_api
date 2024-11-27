@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.generics import RetrieveAPIView, RetrieveDestroyAPIView, UpdateAPIView
 from rest_framework.response import Response
@@ -10,17 +11,18 @@ from rest_framework.pagination import PageNumberPagination
 from django.core.exceptions import ValidationError
 
 # Importaciones de modelos
-from .models import (
-    Asistencia, Aula, Curso_Matricula, Evaluacion, Horario, Horario_Curso,
-    Representante, Alumno, Curso, Matricula, Curriculo
-)
+from .models import *
 
 # Importaciones de serializadores
-from .serializers import (
-    AsistenciaSerializer, AulaSerializer, CurriculoSerializer, Curso_MatriculaSerializer,
-    EvaluacionSerializer, Horario_CursoSerializer, HorarioSerializer, RepresentanteSerializer,
-    AlumnoSerializer, CursoSerializer, MatriculaSerializer, UserSerializer
-)
+from .serializers import *
+
+class MateriaViewSet(viewsets.ModelViewSet):
+    queryset = Materia.objects.all()
+    serializer_class = MateriaSerializer
+
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
 
 # class CustomPagination(PageNumberPagination):
 #     page_size = 20
@@ -130,7 +132,7 @@ class LoginView(APIView):
 
         # Verificar la contraseña
         if check_password(password, user.password):
-            return Response({"message": "Inicio de sesión exitoso."}, status=200)
+            return Response({"message": "Successful login", "user": UserSerializer(user).data}, status=200)
         else:
             return Response({"error": "Credenciales incorrectas."}, status=400)
         

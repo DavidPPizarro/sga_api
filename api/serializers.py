@@ -1,75 +1,95 @@
 from rest_framework import serializers
-from .models import Representante, Alumno, Curso, Matricula, Curriculo, Aula, Evaluacion, Asistencia, Curso_Matricula, Horario, Horario_Curso
-from django.contrib.auth.models import User
+from . import models
 from django.core.exceptions import ValidationError
 
-
+class TeacherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Teacher
+        fields = '__all__'
+        
 class RepresentanteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Representante
+        model = models.Representante
         fields = '__all__'
+
 
 class AlumnoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Alumno
+        model = models.Alumno
         fields = '__all__'
+
 
 class MatriculaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Matricula
+        model = models.Matricula
         fields = '__all__'
+
 
 class CursoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Curso
+        model = models.Curso
         fields = '__all__'
-        
+
+class MateriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Materia
+        fields = '__all__'
+
+
 class CurriculoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Curriculo
+        model = models.Curriculo
         fields = '__all__'
-    
+
+
 class AulaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Aula
+        model = models.Aula
         fields = '__all__'
-        
+
+
 class EvaluacionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Evaluacion
+        model = models.Evaluacion
         fields = '__all__'
-    
+
+
 class AsistenciaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Asistencia
+        model = models.Asistencia
         fields = '__all__'
-        
+
+
 class Curso_MatriculaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Curso_Matricula
+        model = models.Curso_Matricula
         fields = '__all__'
-        
+
+
 class HorarioSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Horario
+        model = models.Horario
         fields = '__all__'
+
 
 class Horario_CursoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Horario_Curso
+        model = models.Horario_Curso
         fields = '__all__'
 
 
 class UserSerializer(serializers.ModelSerializer):
+    groups = serializers.StringRelatedField(many=True)
+
     class Meta:
-        model = User
-        fields = '__all__'
+        model = models.User
+        fields = ['id', 'email', 'first_name', 'last_name', 'groups']
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
-            raise ValidationError('El correo electrónico ya está registrado.')
+            raise ValidationError('El correo electrónico ya está registrado')
         return value
-    
+
     def create(self, validated_data):
         # Crea un usuario con una contraseña encriptada
         user = User.objects.create_user(
@@ -78,4 +98,3 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
-    
