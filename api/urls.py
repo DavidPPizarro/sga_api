@@ -1,7 +1,13 @@
-from django.urls import path
-from .views import AlumnoRetrieveDestroyView, AlumnoRetrieveView, AlumnoUpdateView, AsistenciaListCreateView, AsistenciaRetrieveDestroyView, AsistenciaRetrieveView, AsistenciaUpdateView, AulaListCreateView, AulaRetrieveDestroyView, AulaRetrieveView, AulaUpdateView, CurriculoListCreateView, CurriculoRetrieveDestroyView, CurriculoRetrieveView, CurriculoUpdateView, Curso_MatriculaListCreateView, Curso_MatriculaRetrieveDestroyView, Curso_MatriculaRetrieveView, Curso_MatriculaUpdateView, CursoRetrieveDestroyView, CursoRetrieveView, CursoUpdateView, EvaluacionListCreateView, EvaluacionRetrieveDestroyView, EvaluacionRetrieveView, EvaluacionUpdateView, Horario_CursoListCreateView, Horario_CursoRetrieveDestroyView, Horario_CursoRetrieveView, Horario_CursoUpdateView, HorarioListCreateView, HorarioRetrieveDestroyView, HorarioRetrieveView, HorarioUpdateView, LoginView, MatriculaRetrieveDestroyView, MatriculaRetrieveView, MatriculaUpdateView, RepresentanteListCreateView, AlumnoListCreateView, CursoListCreateView, MatriculaListCreateView, RepresentanteRetrieveDestroyView, RepresentanteRetrieveView, RepresentanteUpdateView, UserListCreateView
+from django.urls import path, include
+from rest_framework import routers
+from .views import *
+
+router = routers.DefaultRouter()
+router.register(r'materias', MateriaViewSet, 'materias')
+router.register(r'teachers', TeacherViewSet, 'teachers')
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('representantes/', RepresentanteListCreateView.as_view(), name='representante-list'),
     path('alumnos/', AlumnoListCreateView.as_view(), name='alumno-list'),
     path('cursos/', CursoListCreateView.as_view(), name='curso-list'),
