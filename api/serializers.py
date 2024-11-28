@@ -81,7 +81,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'groups']
+        fields = '__all__'
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'write_only': True},
+            'data_joined': {'write_only': True},
+        }
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -93,12 +98,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username='',
+            username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            password=validated_data['password'],
+            password=validated_data['password']
         )
+        return user
 
 class TeacherSerializer(serializers.ModelSerializer):
 

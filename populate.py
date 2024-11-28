@@ -241,6 +241,7 @@ def poblar_usuarios(n=10):
     """Crea 'n' usuarios ficticios."""
     for _ in range(n):
         usuario = User(
+            username=fake.user_name(),
             email=fake.email(),
             first_name=fake.first_name(),
             last_name=fake.last_name(),
@@ -258,6 +259,7 @@ def poblar_docentes(n=10):
 
     for _ in range(n):
         usuario = User(
+            username=fake.user_name(),
             email=fake.email(),
             first_name=fake.first_name(),
             last_name=fake.last_name(),
