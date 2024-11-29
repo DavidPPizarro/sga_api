@@ -4,79 +4,81 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
 
 
-class AlumnoSerializer(serializers.ModelSerializer):
+class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Alumno
+        model = Enrollment
+        fields = '__all__'
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
         fields = '__all__'
         depth = 1
 
-
-class RepresentanteSerializer(serializers.ModelSerializer):
-    alumnos = AlumnoSerializer(many=True, read_only=True)
+class EvaluationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Representante
-        fields = '__all__'
-
-class MatriculaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Matricula
-        fields = '__all__'
-
-
-class CursoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Curso
-        fields = '__all__'
-
-
-class MateriaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Materia
+        model = Evaluation
         fields = '__all__'
         depth = 1
 
-
-class CurriculoSerializer(serializers.ModelSerializer):
+class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Curriculo
+        model = Attendance
+        fields = '__all__'
+        depth = 1
+
+class StudentSerializer(serializers.ModelSerializer):
+    evaluations = EvaluationSerializer(many=True, read_only=True)
+    attendances = AttendanceSerializer(many=True, read_only=True)
+    class Meta:
+        model = Student
+        fields = '__all__'
+        depth = 1
+
+class CourseSerializer(serializers.ModelSerializer):
+    attendances = AttendanceSerializer(many=True, read_only=True)
+    evaluations = EvaluationSerializer(many=True, read_only=True)
+    class Meta:
+        model = Course
         fields = '__all__'
 
-
-class AulaSerializer(serializers.ModelSerializer):
+class ParentSerializer(serializers.ModelSerializer):
+    students = StudentSerializer(many=True, read_only=True)
     class Meta:
-        model = Aula
+        model = Parent
         fields = '__all__'
 
-
-class EvaluacionSerializer(serializers.ModelSerializer):
+class CourseScheduleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Evaluacion
+        model = CourseSchedule
         fields = '__all__'
 
-
-class AsistenciaSerializer(serializers.ModelSerializer):
+class CourseEnrollmentSerializer(serializers.ModelSerializer):
+    schedules = CourseScheduleSerializer(many=True, read_only=True)
     class Meta:
-        model = Asistencia
+        model = CourseEnrollment
+        fields = '__all__'
+        depth = 1
+
+class CurriculumSerializer(serializers.ModelSerializer):
+    courses = CourseSerializer(many=True, read_only=True)
+    subjects = SubjectSerializer(many=True, read_only=True)
+    class Meta:
+        model = Curriculum
         fields = '__all__'
 
-
-class Curso_MatriculaSerializer(serializers.ModelSerializer):
+class ScheduleSerializer(serializers.ModelSerializer):
+    courses = CourseScheduleSerializer(many=True, read_only=True)
     class Meta:
-        model = Curso_Matricula
+        model = Schedule
         fields = '__all__'
+        depth = 1
 
-
-class HorarioSerializer(serializers.ModelSerializer):
+class ClassroomSerializer(serializers.ModelSerializer):
+    schedules = ScheduleSerializer(many=True, read_only=True)
     class Meta:
-        model = Horario
+        model = Classroom
         fields = '__all__'
-
-
-class Horario_CursoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Horario_Curso
-        fields = '__all__'
-
 
 class UserSerializer(serializers.ModelSerializer):
     groups = serializers.SerializerMethodField()
@@ -92,7 +94,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
-            raise ValidationError('The email address is already registered')
+            raise ValidationError('Email is already registered')
         return value
 
     def get_groups(self, obj):
@@ -108,11 +110,9 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
 
-
 class TeacherSerializer(serializers.ModelSerializer):
-
+    subjects = SubjectSerializer(many=True, read_only=True)
     user = UserSerializer()
-
     class Meta:
         model = Teacher
         fields = '__all__'
@@ -120,7 +120,6 @@ class TeacherSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data)
-        user.groups.add(Group.objects.get(id=3))
+        user.groups.add(Group.objects.get(name='Teacher'))
         teacher = Teacher.objects.create(user=user, **validated_data)
-
         return teacher

@@ -49,24 +49,23 @@ def generar_fecha_aleatoria(anio_inicio, anio_fin):
 # Funciones para poblar modelos
 
 
-def poblar_representantes(n=50):
+def poblar_representantes(n):
     """Crea 'n' representantes ficticios."""
     for _ in range(n):
-        representante = Representante(
+        representante = Parent(
             dni=fake.unique.random_int(min=10000000, max=99999999),
-            nombre=fake.first_name(),
-            apellido=fake.last_name(),
-            # Asegúrate de que no exceda 15 caracteres
-            telefono=fake.phone_number()[:15],
-            direccion=fake.address()
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            phone_number=fake.phone_number()[0:9],
+            address=fake.address()
         )
         representante.save()
         print(f"Representante creado: {representante}")
 
 
-def poblar_alumnos(n=50):
+def poblar_alumnos(n):
     """Crea 'n' alumnos ficticios."""
-    representantes = list(Representante.objects.all())
+    representantes = list(Parent.objects.all())
     if not representantes:
         print(
             "No hay representantes disponibles. Por favor, primero genera representantes.")
@@ -77,123 +76,124 @@ def poblar_alumnos(n=50):
         fecha_nacimiento = generar_fecha_nacimiento_aleatoria()
         fecha_inscripcion = generar_fecha_inscripcion(fecha_nacimiento)
 
-        alumno = Alumno(
-            nombre=fake.first_name(),
-            apellido=fake.last_name(),
+        alumno = Student(
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
             dni=fake.unique.random_int(min=10000000, max=99999999),
-            fecha_nacimiento=fecha_nacimiento,
-            fecha_inscripcion=fecha_inscripcion,
-            direccion=fake.address(),
-            id_representante=representante
+            birth_date=fecha_nacimiento,
+            enrollment_date=fecha_inscripcion,
+            address=fake.address(),
+            parent=representante
         )
         alumno.save()
         print(f"Alumno creado: {alumno}")
 
 
-def poblar_curriculos(n=3):
+def poblar_curriculos(n):
     """Crea 'n' currículos ficticios."""
     for _ in range(n):
-        curriculo = Curriculo(
-            nombre=fake.word(),
-            anio=random.randint(2010, 2023),
-            estado=random.choice(['activo', 'inactivo', 'eliminado'])
+        curriculo = Curriculum(
+            name=fake.word(),
+            year=random.randint(2018, 2024),
+            status=random.choice(['active', 'inactive', 'deleted']),
+            school_year=random.randint(2015, date.today().year)
         )
         curriculo.save()
         print(f"Currículo creado: {curriculo}")
 
 
-def poblar_cursos(n=40):
+def poblar_cursos(n):
     """Crea 'n' cursos ficticios."""
-    curriculos = list(Curriculo.objects.all())
+    curriculos = list(Curriculum.objects.all())
     if not curriculos:
         print("No hay currículos disponibles. Por favor, primero genera currículos.")
         return
 
     for _ in range(n):
-        curso = Curso(
-            nombre=fake.word(),
-            horas_semanales=random.randint(1, 10),
-            id_curriculo=random.choice(curriculos)
+        curso = Course(
+            name=fake.word(),
+            weekly_hours=random.randint(2, 5),
+            curriculum=random.choice(curriculos)
         )
         curso.save()
         print(f"Curso creado: {curso}")
 
 
-def poblar_aulas(n=30):
+def poblar_aulas(n):
     """Crea 'n' aulas ficticias."""
     for _ in range(n):
-        aula = Aula(
-            nombre=f"Aula {fake.word()}",
-            capacidad=random.randint(20, 50)
+        aula = Classroom(
+            name=fake.word(),
+            capacity=random.randint(10, 50)
         )
         aula.save()
         print(f"Aula creada: {aula}")
 
 
-def poblar_matriculas(n=50):
+def poblar_matriculas(n):
     """Crea 'n' matrículas ficticias."""
-    alumnos = list(Alumno.objects.all())
-    curriculos = list(Curriculo.objects.all())
+    alumnos = list(Student.objects.all())
+    curriculos = list(Curriculum.objects.all())
 
     if not alumnos or not curriculos:
         print("No hay alumnos o currículos disponibles. Por favor, genera datos para ellos primero.")
         return
 
     for _ in range(n):
-        matricula = Matricula(
-            id_alumno=random.choice(alumnos),
-            id_curriculo=random.choice(curriculos),
-            fecha_matricula=generar_fecha_aleatoria(2015, date.today().year),
-            estado=random.choice(['activo', 'inactivo', 'suspendido'])
+        matricula = Enrollment(
+            student=random.choice(alumnos),
+            curriculum=random.choice(curriculos),
+            enrollment_date=generar_fecha_aleatoria(2015, date.today().year),
+            status=random.choice(['active', 'inactive', 'suspended']),
         )
         matricula.save()
         print(f"Matrícula creada: {matricula}")
 
 
-def poblar_evaluaciones(n=10):
+def poblar_evaluaciones(n):
     """Crea 'n' evaluaciones ficticias."""
-    alumnos = list(Alumno.objects.all())
-    cursos = list(Curso.objects.all())
+    alumnos = list(Student.objects.all())
+    cursos = list(Course.objects.all())
 
     if not alumnos or not cursos:
         print("No hay alumnos o cursos disponibles. Por favor, genera datos para ellos primero.")
         return
 
     for _ in range(n):
-        evaluacion = Evaluacion(
-            id_alumno=random.choice(alumnos),
-            id_curso=random.choice(cursos),
-            tipo=random.choice(['continua', 'parcial']),
-            nota=round(random.uniform(0, 20), 2),
-            fecha=generar_fecha_aleatoria(2020, date.today().year)
+        evaluacion = Evaluation(
+            student=random.choice(alumnos),
+            course=random.choice(cursos),
+            type=random.choice(['parcial', 'final', 'práctica']),
+            grade=random.randint(0, 20),
+            date=generar_fecha_aleatoria(2020, date.today().year)
         )
         evaluacion.save()
         print(f"Evaluación creada: {evaluacion}")
 
 
-def poblar_asistencias(n=100):
+def poblar_asistencias(n):
     """Crea 'n' asistencias ficticias."""
-    alumnos = list(Alumno.objects.all())
-    cursos = list(Curso.objects.all())
+    alumnos = list(Student.objects.all())
+    cursos = list(Course.objects.all())
 
     if not alumnos or not cursos:
         print("No hay alumnos o cursos disponibles. Por favor, genera datos para ellos primero.")
         return
 
     for _ in range(n):
-        asistencia = Asistencia(
-            id_alumno=random.choice(alumnos),
-            id_curso=random.choice(cursos),
-            fecha=generar_fecha_aleatoria(2020, date.today().year),
-            estado=random.choice(['asistio', 'no asistio'])
+        asistencia = Attendance(
+            student=random.choice(alumnos),
+            date=generar_fecha_aleatoria(2020, date.today().year),
+            status=random.choice(['presente', 'ausente', 'justificado']),
+            course=random.choice(cursos)
         )
         asistencia.save()
         print(f"Asistencia creada: {asistencia}")
 
 
-def poblar_horarios(n=10):
+def poblar_horarios(n):
     """Crea 'n' horarios ficticios."""
-    aulas = list(Aula.objects.all())
+    aulas = list(Classroom.objects.all())
     if not aulas:
         print("No hay aulas disponibles. Por favor, genera datos para ellas primero.")
         return
@@ -201,30 +201,29 @@ def poblar_horarios(n=10):
     for _ in range(n):
         hora_inicio = fake.date_time_between(start_date="-1y", end_date="now")
         hora_fin = hora_inicio + timedelta(hours=random.randint(1, 3))
-        horario = Horario(
-            dia=random.choice(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'])[
-                :15],  # Truncar a 15 caracteres
-            hora_inicio=hora_inicio,
-            hora_fin=hora_fin,
-            id_aula=random.choice(aulas)
+        horario = Schedule(
+            day=random.choice(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']),
+            start_time=hora_inicio,
+            end_time=hora_fin,
+            classroom=random.choice(aulas)
         )
         horario.save()
         print(f"Horario creado: {horario}")
 
 
-def poblar_horarios_cursos(n=10):
+def poblar_horarios_cursos(n):
     """Crea 'n' relaciones de horario-curso ficticias."""
-    horarios = list(Horario.objects.all())
-    cursos = list(Curso.objects.all())
+    horarios = list(Schedule.objects.all())
+    cursos = list(Course.objects.all())
 
     if not horarios or not cursos:
         print("No hay horarios o cursos disponibles. Por favor, genera datos para ellos primero.")
         return
 
     for _ in range(n):
-        horario_curso = Horario_Curso(
-            id_curso=random.choice(cursos),
-            id_horario=random.choice(horarios)
+        horario_curso = CourseSchedule(
+            course=random.choice(cursos),
+            schedule=random.choice(horarios)
         )
         horario_curso.save()
         print(f"Horario-Curso creado: {horario_curso}")
@@ -232,12 +231,12 @@ def poblar_horarios_cursos(n=10):
 from django.contrib.auth.models import Group
 def poblar_grupos():
     """Crea los grupos de usuarios."""
-    for grupo in ["Administración", "Dirección", "Docente"]:
+    for grupo in ["Management", "Teacher"]:
         nuevo_grupo, _ = Group.objects.get_or_create(name=grupo)
         print(f"Grupo creado: {nuevo_grupo}")
 
 
-def poblar_usuarios(n=10):
+def poblar_usuarios(n):
     """Crea 'n' usuarios ficticios."""
     for _ in range(n):
         usuario = User(
@@ -250,12 +249,12 @@ def poblar_usuarios(n=10):
         usuario.save()
 
         groups = Group.objects.get(
-            name=random.choice(["Administración", "Dirección"]))
+            name=random.choice(["Management"]))
         usuario.groups.add(groups)
         print(f"Usuario creado: {usuario}")
 
 
-def poblar_docentes(n=10):
+def poblar_docentes(n):
 
     for _ in range(n):
         usuario = User(
@@ -266,7 +265,7 @@ def poblar_docentes(n=10):
             password=fake.password(),
         )
         usuario.save()
-        usuario.groups.add(Group.objects.get(id=3))
+        usuario.groups.add(Group.objects.get(id=2))
         docente = Teacher(
             user=usuario,
             specialty=fake.word()
@@ -274,12 +273,13 @@ def poblar_docentes(n=10):
         docente.save()
         print(f"Docente creado: {docente}")
 
-def poblar_materias(n=10):
+
+def poblar_materias(n):
     for _ in range(n):
-        materia = Materia(
+        materia = Subject(
             name=fake.word(),
-            id_course=random.choice(Curso.objects.all()),
-            id_teacher=random.choice(Teacher.objects.all())
+            course=random.choice(Course.objects.all()),
+            teacher=random.choice(Teacher.objects.all())
         )
         materia.save()
         print(f"Materia creada: {materia}")
@@ -303,5 +303,5 @@ def poblar_todos():
     poblar_docentes(10)
     poblar_materias(10)
 
-# Llamar a poblar_todos para poblar la base de datos
+
 poblar_todos()
