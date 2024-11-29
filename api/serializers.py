@@ -15,29 +15,23 @@ class MateriaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
-
-class AulaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Aula
-        fields = '__all__'
-
-
 class EvaluacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evaluacion
         fields = '__all__'
         depth = 1
 
-class AlumnoSerializer(serializers.ModelSerializer):
-    evaluaciones = EvaluacionSerializer(many=True, read_only=True)
-    class Meta:
-        model = Alumno
-        fields = '__all__'
-        depth = 1
-
 class AsistenciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asistencia
+        fields = '__all__'
+        depth = 1
+
+class AlumnoSerializer(serializers.ModelSerializer):
+    evaluaciones = EvaluacionSerializer(many=True, read_only=True)
+    asistencias = AsistenciaSerializer(many=True, read_only=True)
+    class Meta:
+        model = Alumno
         fields = '__all__'
         depth = 1
 
@@ -54,10 +48,13 @@ class RepresentanteSerializer(serializers.ModelSerializer):
         model = Representante
         fields = '__all__'
 
-
-
+class Horario_CursoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Horario_Curso
+        fields = '__all__'
 
 class Curso_MatriculaSerializer(serializers.ModelSerializer):
+    horarios = Horario_CursoSerializer(many=True, read_only=True)
     class Meta:
         model = Curso_Matricula
         fields = '__all__'
@@ -66,23 +63,24 @@ class Curso_MatriculaSerializer(serializers.ModelSerializer):
 
 class CurriculoSerializer(serializers.ModelSerializer):
     cursos = CursoSerializer(many=True, read_only=True)
-
+    materias = MateriaSerializer(many=True, read_only=True)
     class Meta:
         model = Curriculo
         fields = '__all__'
 
 
 class HorarioSerializer(serializers.ModelSerializer):
+    cursos = Horario_CursoSerializer(many=True, read_only=True)
     class Meta:
         model = Horario
         fields = '__all__'
+        depth = 1
 
-
-class Horario_CursoSerializer(serializers.ModelSerializer):
+class AulaSerializer(serializers.ModelSerializer):
+    horarios = HorarioSerializer(many=True, read_only=True)
     class Meta:
-        model = Horario_Curso
+        model = Aula
         fields = '__all__'
-
 
 class UserSerializer(serializers.ModelSerializer):
     groups = serializers.SerializerMethodField()
@@ -117,10 +115,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TeacherSerializer(serializers.ModelSerializer):
     materias = MateriaSerializer(many=True, read_only=True)
-    user = UserSerializer()
     class Meta:
         model = Teacher
         fields = '__all__'
+        depth = 1
+
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data)

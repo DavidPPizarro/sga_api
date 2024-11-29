@@ -228,6 +228,20 @@ def poblar_horarios_cursos(n=10):
         )
         horario_curso.save()
         print(f"Horario-Curso creado: {horario_curso}")
+def poblar_evaluaciones(n):
+    alumnos = list(Alumno.objects.all())
+    cursos = list(Curso.objects.all())
+
+    for _ in range(n):
+        evaluacion = Evaluacion(
+            id_alumno=random.choice(alumnos),
+            id_curso=random.choice(cursos),
+            tipo=random.choice(['Continua', 'Parcial 1', 'Parcial 2', 'Parcial 3', 'Final']),
+            nota=round(random.uniform(0, 20), 2),
+            fecha=generar_fecha_aleatoria(2020, date.today().year)
+        )
+        evaluacion.save()
+        print(f"Evaluación creada: {evaluacion}")
 
 from django.contrib.auth.models import Group
 def poblar_grupos():
@@ -298,6 +312,7 @@ def poblar_todos():
     poblar_asistencias(100)
     poblar_horarios(10)
     poblar_horarios_cursos(10)
+    pobalr
     poblar_grupos()
     poblar_usuarios(10)
     poblar_docentes(10)

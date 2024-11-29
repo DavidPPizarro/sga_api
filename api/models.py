@@ -9,7 +9,8 @@ class User(AbstractUser):
 
 
 class Teacher(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='teacher')
     specialty = models.CharField(max_length=150)
 
     def __str__(self):
@@ -85,9 +86,10 @@ class Curso(models.Model):
 class Materia (models.Model):
     id_materia = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    id_course = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    id_course = models.ForeignKey(
+        Curso, on_delete=models.CASCADE, related_name='materias')
     id_teacher = models.ForeignKey(
-        Teacher, on_delete=models.CASCADE, related_name='materials')
+        Teacher, on_delete=models.CASCADE, related_name='materias')
 
     def __str__(self):
         return self.name
@@ -151,7 +153,8 @@ class Evaluacion(models.Model):
 
 class Asistencia(models.Model):
     id_asistencia = models.AutoField(primary_key=True)
-    id_alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    id_alumno = models.ForeignKey(
+        Alumno, on_delete=models.CASCADE, related_name='asistencias')
     fecha = models.DateField()
     # fecha = models.DateField(auto_now_add=True)
     ESTADO_CHOICES = [
@@ -160,7 +163,8 @@ class Asistencia(models.Model):
     ]
     estado = models.CharField(
         max_length=10, choices=ESTADO_CHOICES, default='no asistio')
-    id_curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='asistencias')
+    id_curso = models.ForeignKey(
+        Curso, on_delete=models.CASCADE, related_name='asistencias')
 
     def __str__(self):
         return f"Asistencia de {self.id_alumno} - {self.fecha}"
@@ -184,7 +188,8 @@ class Horario(models.Model):
     dia = models.CharField(max_length=15)
     hora_inicio = models.DateTimeField()
     hora_fin = models.DateTimeField()
-    id_aula = models.ForeignKey(Aula, on_delete=models.CASCADE)
+    id_aula = models.ForeignKey(
+        Aula, on_delete=models.CASCADE, related_name='horarios')
 
     def __str__(self):
         return f"Horario {self.id_horario}: {self.dia} de {self.hora_inicio} a {self.hora_fin}"
@@ -194,8 +199,10 @@ class Horario(models.Model):
 
 class Horario_Curso(models.Model):
     id_horario_curso = models.AutoField(primary_key=True)
-    id_curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    id_horario = models.ForeignKey(Horario, on_delete=models.CASCADE)
+    id_curso = models.ForeignKey(
+        Curso, on_delete=models.CASCADE, related_name='horarios')
+    id_horario = models.ForeignKey(
+        Horario, on_delete=models.CASCADE, related_name='cursos')
 
     def __str__(self):
         return f"Horario_Curso {self.id_horario_curso}: Curso {self.id_curso.id_curso} - Horario {self.id_horario.id_horario}"
