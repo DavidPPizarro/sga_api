@@ -5,11 +5,10 @@ from .views import *
 router = routers.DefaultRouter()
 router.register(r'materias', MateriaViewSet, 'materias')
 router.register(r'teachers', TeacherViewSet, 'teachers')
-
+router.register(r'representantes', RepresentanteViewSet, 'representantes')
+router.register(r'alumnos', AlumnoViewSet, 'alumnos')
 urlpatterns = [
     path('', include(router.urls)),
-    path('representantes/', RepresentanteListCreateView.as_view(), name='representante-list'),
-    path('alumnos/', AlumnoListCreateView.as_view(), name='alumno-list'),
     path('cursos/', CursoListCreateView.as_view(), name='curso-list'),
     path('matriculas/', MatriculaListCreateView.as_view(), name='matricula-list'),
     path('curriculo/', CurriculoListCreateView.as_view(), name='curriculo-list'),
@@ -22,8 +21,6 @@ urlpatterns = [
     path('users/', UserListCreateView.as_view(), name='user-list-create'),
     path('login/', LoginView.as_view(), name='login'),
     
-    path('representantes/<int:pk>/', RepresentanteRetrieveView.as_view(), name='representante-detail'),
-    path('alumnos/<int:pk>/', AlumnoRetrieveView.as_view(), name='alumno-detail'),
     path('cursos/<int:pk>/', CursoRetrieveView.as_view(), name='curso-detail'),
     path('matriculas/<int:pk>/', MatriculaRetrieveView.as_view(), name='matricula-detail'),
     path('curriculo/<int:pk>/', CurriculoRetrieveView.as_view(), name='curriculo-detail'),
@@ -34,8 +31,6 @@ urlpatterns = [
     path('horario/<int:pk>/', HorarioRetrieveView.as_view(), name='horario-detail'),
     path('horario_curso/<int:pk>/', Horario_CursoRetrieveView.as_view(), name='horario_curso-detail'),   
     # Rutas para eliminación (DELETE)
-    path('representantes/<int:pk>/delete/', RepresentanteRetrieveDestroyView.as_view(), name='representante-delete'),
-    path('alumnos/<int:pk>/delete/', AlumnoRetrieveDestroyView.as_view(), name='alumno-delete'),
     path('cursos/<int:pk>/delete/', CursoRetrieveDestroyView.as_view(), name='curso-delete'),
     path('matriculas/<int:pk>/delete/', MatriculaRetrieveDestroyView.as_view(), name='matricula-delete'),
     path('curriculo/<int:pk>/delete/', CurriculoRetrieveDestroyView.as_view(), name='curriculo-delete'),
@@ -46,8 +41,6 @@ urlpatterns = [
     path('horarios/<int:pk>/delete/', HorarioRetrieveDestroyView.as_view(), name='horario-delete'),
     path('horario_curso/<int:pk>/delete/', Horario_CursoRetrieveDestroyView.as_view(), name='horario-curso-delete'),
     #Actualizar
-    path('representantes/<int:pk>/update/', RepresentanteUpdateView.as_view(), name='representante-update'),
-    path('alumnos/<int:pk>/update/', AlumnoUpdateView.as_view(), name='alumno-update'),
     path('cursos/<int:pk>/update/', CursoUpdateView.as_view(), name='curso-update'),
     path('matriculas/<int:pk>/update/', MatriculaUpdateView.as_view(), name='matricula-update'),
     path('curriculo/<int:pk>/update/', CurriculoUpdateView.as_view(), name='curriculo-update'),

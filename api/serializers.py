@@ -4,17 +4,18 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
 
 
-class RepresentanteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Representante
-        fields = '__all__'
-
-
 class AlumnoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alumno
         fields = '__all__'
+        depth = 1
 
+
+class RepresentanteSerializer(serializers.ModelSerializer):
+    alumnos = AlumnoSerializer(many=True, read_only=True)
+    class Meta:
+        model = Representante
+        fields = '__all__'
 
 class MatriculaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,6 +33,7 @@ class MateriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Materia
         fields = '__all__'
+        depth = 1
 
 
 class CurriculoSerializer(serializers.ModelSerializer):
@@ -85,7 +87,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
             'username': {'write_only': True},
-            'data_joined': {'write_only': True},
+            'date_joined': {'write_only': True},
         }
 
     def validate_email(self, value):
@@ -105,6 +107,7 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+
 
 class TeacherSerializer(serializers.ModelSerializer):
 
