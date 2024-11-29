@@ -4,42 +4,16 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
 
 
-class AlumnoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Alumno
-        fields = '__all__'
-        depth = 1
-
-
-class RepresentanteSerializer(serializers.ModelSerializer):
-    alumnos = AlumnoSerializer(many=True, read_only=True)
-    class Meta:
-        model = Representante
-        fields = '__all__'
-
 class MatriculaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Matricula
         fields = '__all__'
-
-
-class CursoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Curso
-        fields = '__all__'
-
 
 class MateriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Materia
         fields = '__all__'
         depth = 1
-
-
-class CurriculoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Curriculo
-        fields = '__all__'
 
 
 class AulaSerializer(serializers.ModelSerializer):
@@ -52,17 +26,49 @@ class EvaluacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evaluacion
         fields = '__all__'
+        depth = 1
 
+class AlumnoSerializer(serializers.ModelSerializer):
+    evaluaciones = EvaluacionSerializer(many=True, read_only=True)
+    class Meta:
+        model = Alumno
+        fields = '__all__'
+        depth = 1
 
 class AsistenciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asistencia
         fields = '__all__'
+        depth = 1
+
+class CursoSerializer(serializers.ModelSerializer):
+    asistencias = AsistenciaSerializer(many=True, read_only=True)
+    evaluaciones = EvaluacionSerializer(many=True, read_only=True)
+    class Meta:
+        model = Curso
+        fields = '__all__'
+
+class RepresentanteSerializer(serializers.ModelSerializer):
+    alumnos = AlumnoSerializer(many=True, read_only=True)
+    class Meta:
+        model = Representante
+        fields = '__all__'
+
+
 
 
 class Curso_MatriculaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Curso_Matricula
+        fields = '__all__'
+        depth = 1
+
+
+class CurriculoSerializer(serializers.ModelSerializer):
+    cursos = CursoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Curriculo
         fields = '__all__'
 
 
@@ -110,17 +116,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TeacherSerializer(serializers.ModelSerializer):
-
+    materias = MateriaSerializer(many=True, read_only=True)
     user = UserSerializer()
-
     class Meta:
         model = Teacher
         fields = '__all__'
-
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data)
         user.groups.add(Group.objects.get(id=3))
         teacher = Teacher.objects.create(user=user, **validated_data)
-
         return teacher

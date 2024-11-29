@@ -76,7 +76,7 @@ class AulaListCreateView(generics.ListCreateAPIView):
     serializer_class = AulaSerializer
     # pagination_class = CustomPagination
     
-class EvaluacionListCreateView(generics.ListCreateAPIView):
+class EvaluacionViewSet(viewsets.ModelViewSet):
     queryset = Evaluacion.objects.all()
     serializer_class = EvaluacionSerializer
     # pagination_class = CustomPagination

@@ -128,11 +128,16 @@ class Matricula(models.Model):
 
 class Evaluacion(models.Model):
     id_evaluacion = models.AutoField(primary_key=True)
-    id_alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
-    id_curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    id_alumno = models.ForeignKey(
+        Alumno, on_delete=models.CASCADE, related_name='evaluaciones')
+    id_curso = models.ForeignKey(
+        Curso, on_delete=models.CASCADE, related_name='evaluaciones')
     TIPO_CHOICES = [
         ('continua', 'Continua'),
-        ('parcial', 'Parcial'),
+        ('parcia l', 'Parcia l'),
+        ('parcial 2', 'Parcial 2'),
+        ('parcial 3', 'Parcial 3'),
+        ('final', 'Final'),
     ]
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
     nota = models.FloatField()
@@ -155,7 +160,7 @@ class Asistencia(models.Model):
     ]
     estado = models.CharField(
         max_length=10, choices=ESTADO_CHOICES, default='no asistio')
-    id_curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    id_curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='asistencias')
 
     def __str__(self):
         return f"Asistencia de {self.id_alumno} - {self.fecha}"
