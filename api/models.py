@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['']
+    REQUIRED_FIELDS = ['username']
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
