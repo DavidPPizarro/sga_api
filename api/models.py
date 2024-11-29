@@ -5,7 +5,8 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['']
+    REQUIRED_FIELDS = ['username']
+
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -41,7 +42,9 @@ class Alumno(models.Model):
     # fecha_inscripcion = models.DateField(auto_now_add=True)
     direccion = models.CharField(max_length=100, default='Desconocido')
     id_representante = models.ForeignKey(
-        Representante, on_delete=models.DO_NOTHING)
+        Representante,
+        on_delete=models.CASCADE,
+        related_name='alumnos')
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
@@ -72,7 +75,8 @@ class Curso(models.Model):
     id_curso = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     horas_semanales = models.IntegerField()
-    id_curriculo = models.ForeignKey(Curriculo, on_delete=models.DO_NOTHING)
+    id_curriculo = models.ForeignKey(
+        Curriculo, on_delete=models.CASCADE, related_name='cursos')
 
     def __str__(self):
         return self.nombre
@@ -82,7 +86,8 @@ class Materia (models.Model):
     id_materia = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     id_course = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    id_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    id_teacher = models.ForeignKey(
+        Teacher, on_delete=models.CASCADE, related_name='materials')
 
     def __str__(self):
         return self.name

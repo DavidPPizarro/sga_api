@@ -47,12 +47,11 @@ class TeacherViewSet(viewsets.ModelViewSet):
 #             return None
 #         return self.page.previous_page_number()
         
-class RepresentanteListCreateView(generics.ListCreateAPIView):
+class RepresentanteViewSet(viewsets.ModelViewSet):
     queryset = Representante.objects.all()
     serializer_class = RepresentanteSerializer
-    # pagination_class = CustomPagination
 
-class AlumnoListCreateView(generics.ListCreateAPIView):
+class AlumnoViewSet(viewsets.ModelViewSet):
     queryset = Alumno.objects.all()
     serializer_class = AlumnoSerializer
     # pagination_class = CustomPagination
