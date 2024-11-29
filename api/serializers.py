@@ -4,82 +4,80 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
 
 
-class MatriculaSerializer(serializers.ModelSerializer):
+class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Matricula
+        model = Enrollment
         fields = '__all__'
 
-class MateriaSerializer(serializers.ModelSerializer):
+class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Materia
-        fields = '__all__'
-        depth = 1
-
-class EvaluacionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Evaluacion
+        model = Subject
         fields = '__all__'
         depth = 1
 
-class AsistenciaSerializer(serializers.ModelSerializer):
+class EvaluationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Asistencia
+        model = Evaluation
         fields = '__all__'
         depth = 1
 
-class AlumnoSerializer(serializers.ModelSerializer):
-    evaluaciones = EvaluacionSerializer(many=True, read_only=True)
-    asistencias = AsistenciaSerializer(many=True, read_only=True)
+class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Alumno
+        model = Attendance
         fields = '__all__'
         depth = 1
 
-class CursoSerializer(serializers.ModelSerializer):
-    asistencias = AsistenciaSerializer(many=True, read_only=True)
-    evaluaciones = EvaluacionSerializer(many=True, read_only=True)
+class StudentSerializer(serializers.ModelSerializer):
+    evaluations = EvaluationSerializer(many=True, read_only=True)
+    attendances = AttendanceSerializer(many=True, read_only=True)
     class Meta:
-        model = Curso
-        fields = '__all__'
-
-class RepresentanteSerializer(serializers.ModelSerializer):
-    alumnos = AlumnoSerializer(many=True, read_only=True)
-    class Meta:
-        model = Representante
-        fields = '__all__'
-
-class Horario_CursoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Horario_Curso
-        fields = '__all__'
-
-class Curso_MatriculaSerializer(serializers.ModelSerializer):
-    horarios = Horario_CursoSerializer(many=True, read_only=True)
-    class Meta:
-        model = Curso_Matricula
+        model = Student
         fields = '__all__'
         depth = 1
 
-
-class CurriculoSerializer(serializers.ModelSerializer):
-    cursos = CursoSerializer(many=True, read_only=True)
-    materias = MateriaSerializer(many=True, read_only=True)
+class CourseSerializer(serializers.ModelSerializer):
+    attendances = AttendanceSerializer(many=True, read_only=True)
+    evaluations = EvaluationSerializer(many=True, read_only=True)
     class Meta:
-        model = Curriculo
+        model = Course
         fields = '__all__'
 
-
-class HorarioSerializer(serializers.ModelSerializer):
-    cursos = Horario_CursoSerializer(many=True, read_only=True)
+class ParentSerializer(serializers.ModelSerializer):
+    students = StudentSerializer(many=True, read_only=True)
     class Meta:
-        model = Horario
+        model = Parent
+        fields = '__all__'
+
+class CourseScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseSchedule
+        fields = '__all__'
+
+class CourseEnrollmentSerializer(serializers.ModelSerializer):
+    schedules = CourseScheduleSerializer(many=True, read_only=True)
+    class Meta:
+        model = CourseEnrollment
         fields = '__all__'
         depth = 1
 
-class AulaSerializer(serializers.ModelSerializer):
-    horarios = HorarioSerializer(many=True, read_only=True)
+class CurriculumSerializer(serializers.ModelSerializer):
+    courses = CourseSerializer(many=True, read_only=True)
+    subjects = SubjectSerializer(many=True, read_only=True)
     class Meta:
-        model = Aula
+        model = Curriculum
+        fields = '__all__'
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    courses = CourseScheduleSerializer(many=True, read_only=True)
+    class Meta:
+        model = Schedule
+        fields = '__all__'
+        depth = 1
+
+class ClassroomSerializer(serializers.ModelSerializer):
+    schedules = ScheduleSerializer(many=True, read_only=True)
+    class Meta:
+        model = Classroom
         fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
@@ -96,7 +94,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
-            raise ValidationError('The email address is already registered')
+            raise ValidationError('Email is already registered')
         return value
 
     def get_groups(self, obj):
@@ -112,9 +110,8 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
 
-
 class TeacherSerializer(serializers.ModelSerializer):
-    materias = MateriaSerializer(many=True, read_only=True)
+    subjects = SubjectSerializer(many=True, read_only=True)
     class Meta:
         model = Teacher
         fields = '__all__'

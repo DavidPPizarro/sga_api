@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['usernameusername']
+    REQUIRED_FIELDS = ['username']
 
 
 class Teacher(models.Model):
@@ -16,193 +16,168 @@ class Teacher(models.Model):
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
 
-# Representante del alumno
 
-
-class Representante(models.Model):
-    id_representante = models.AutoField(primary_key=True)
+class Parent(models.Model):
+    id_parent = models.AutoField(primary_key=True)
     dni = models.CharField(max_length=8, unique=True)
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    telefono = models.CharField(max_length=15)
-    direccion = models.TextField()
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15)
+    address = models.TextField()
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
-
-# Alumno
+        return f"{self.first_name} {self.last_name}"
 
 
-class Alumno(models.Model):
-    id_alumno = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
+class Student(models.Model):
+    id_student = models.AutoField(primary_key=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     dni = models.CharField(max_length=8, default='', unique=True)
-    fecha_nacimiento = models.DateField()
-    fecha_inscripcion = models.DateField()
-    # fecha_inscripcion = models.DateField(auto_now_add=True)
-    direccion = models.CharField(max_length=100, default='Desconocido')
-    id_representante = models.ForeignKey(
-        Representante,
+    birth_date = models.DateField()
+    enrollment_date = models.DateField()
+    address = models.CharField(max_length=100, default='Unknown')
+    parent = models.ForeignKey(
+        Parent,
         on_delete=models.CASCADE,
-        related_name='alumnos')
+        related_name='students')
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
-
-# Curriculo
+        return f"{self.first_name} {self.last_name}"
 
 
-class Curriculo(models.Model):
-    id_curriculo = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=100)
-    anio = models.IntegerField()
-    ESTADO_CHOICES = [
-        ('activo', 'Activo'),
-        ('inactivo', 'Inactivo'),
-        ('eliminado', 'Eliminado'),
-    ]
-    estado = models.CharField(
-        max_length=10, choices=ESTADO_CHOICES, default='inactivo')
-    anio_escolar = models.IntegerField
-
-    def __str__(self):
-        return f"{self.nombre} {self.anio}"
-
-# Curso
-
-
-class Curso(models.Model):
-    id_curso = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=100)
-    horas_semanales = models.IntegerField()
-    id_curriculo = models.ForeignKey(
-        Curriculo, on_delete=models.CASCADE, related_name='cursos')
-
-    def __str__(self):
-        return self.nombre
-
-
-class Materia (models.Model):
-    id_materia = models.AutoField(primary_key=True)
+class Curriculum(models.Model):
+    id_curriculum = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    id_course = models.ForeignKey(
-        Curso, on_delete=models.CASCADE, related_name='materias')
-    id_teacher = models.ForeignKey(
-        Teacher, on_delete=models.CASCADE, related_name='materias')
+    year = models.IntegerField()
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+        ('deleted', 'Deleted'),
+    ]
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default='inactive')
+    school_year = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.name} {self.year}"
+
+
+class Course(models.Model):
+    id_course = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    weekly_hours = models.IntegerField()
+    curriculum = models.ForeignKey(
+        Curriculum, on_delete=models.CASCADE, related_name='courses')
 
     def __str__(self):
         return self.name
 
-# Aula
 
-
-class Aula(models.Model):
-    id_aula = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=50)
-    capacidad = models.IntegerField()
+class Subject(models.Model):
+    id_subject = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name='subjects')
+    teacher = models.ForeignKey(
+        Teacher, on_delete=models.CASCADE, related_name='subjects')
 
     def __str__(self):
-        return self.nombre
-
-# Matricula
+        return self.name
 
 
-class Matricula(models.Model):
-    id_matricula = models.AutoField(primary_key=True)
-    id_alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
-    id_curriculo = models.ForeignKey(Curriculo, on_delete=models.CASCADE)
-    fecha_matricula = models.DateField()
-    # fecha_matricula = models.DateField(auto_now=True)
-    ESTADO_CHOICES = [
-        ('activo', 'Activo'),
-        ('inactivo', 'Inactivo'),
-        ('suspendido', 'Suspendido'),
+class Classroom(models.Model):
+    id_classroom = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50)
+    capacity = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class Enrollment(models.Model):
+    id_enrollment = models.AutoField(primary_key=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE)
+    enrollment_date = models.DateField()
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+        ('suspended', 'Suspended'),
     ]
-    estado = models.CharField(
-        max_length=10, choices=ESTADO_CHOICES, default='activo')
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default='active')
 
     def __str__(self):
-        return f"Matricula de {self.id_alumno}"
-
-# Evaluacion
+        return f"Enrollment of {self.student}"
 
 
-class Evaluacion(models.Model):
-    id_evaluacion = models.AutoField(primary_key=True)
-    id_alumno = models.ForeignKey(
-        Alumno, on_delete=models.CASCADE, related_name='evaluaciones')
-    id_curso = models.ForeignKey(
-        Curso, on_delete=models.CASCADE, related_name='evaluaciones')
-    TIPO_CHOICES = [
-        ('continua', 'Continua'),
-        ('parcia l', 'Parcia l'),
-        ('parcial 2', 'Parcial 2'),
-        ('parcial 3', 'Parcial 3'),
+class Evaluation(models.Model):
+    id_evaluation = models.AutoField(primary_key=True)
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='evaluations')
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name='evaluations')
+    TYPE_CHOICES = [
+        ('continuous', 'Continuous'),
+        ('partial 1', 'Partial 1'),
+        ('partial 2', 'Partial 2'),
+        ('partial 3', 'Partial 3'),
         ('final', 'Final'),
     ]
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
-    nota = models.FloatField()
-    fecha = models.DateField(auto_now_add=True)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    grade = models.FloatField()
+    date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"Evaluación de {self.id_alumno} en {self.id_curso}"
-
-# Asistencia
+        return f"Evaluation of {self.student} in {self.course}"
 
 
-class Asistencia(models.Model):
-    id_asistencia = models.AutoField(primary_key=True)
-    id_alumno = models.ForeignKey(
-        Alumno, on_delete=models.CASCADE, related_name='asistencias')
-    fecha = models.DateField()
-    # fecha = models.DateField(auto_now_add=True)
-    ESTADO_CHOICES = [
-        ('asistio', 'Asistio'),
-        ('no asistio', 'No Asistio'),
+class Attendance(models.Model):
+    id_attendance = models.AutoField(primary_key=True)
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='attendances')
+    date = models.DateField()
+    STATUS_CHOICES = [
+        ('attended', 'Attended'),
+        ('not attended', 'Not Attended'),
     ]
-    estado = models.CharField(
-        max_length=10, choices=ESTADO_CHOICES, default='no asistio')
-    id_curso = models.ForeignKey(
-        Curso, on_delete=models.CASCADE, related_name='asistencias')
+    status = models.CharField(
+        max_length=12, choices=STATUS_CHOICES, default='not attended')
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name='attendances')
 
     def __str__(self):
-        return f"Asistencia de {self.id_alumno} - {self.fecha}"
-
- # Curso Matricula
+        return f"Attendance of {self.student} - {self.date}"
 
 
-class Curso_Matricula(models.Model):
-    id_curso_matricula = models.AutoField(primary_key=True)
-    id_curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    id_matricula = models.ForeignKey(Matricula, on_delete=models.CASCADE)
+class CourseEnrollment(models.Model):
+    id_course_enrollment = models.AutoField(primary_key=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id_curso_matricula
-
-# Horario
+        return str(self.id_course_enrollment)
 
 
-class Horario(models.Model):
-    id_horario = models.AutoField(primary_key=True)
-    dia = models.CharField(max_length=15)
-    hora_inicio = models.DateTimeField()
-    hora_fin = models.DateTimeField()
-    id_aula = models.ForeignKey(
-        Aula, on_delete=models.CASCADE, related_name='horarios')
+class Schedule(models.Model):
+    id_schedule = models.AutoField(primary_key=True)
+    day = models.CharField(max_length=15)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    classroom = models.ForeignKey(
+        Classroom, on_delete=models.CASCADE, related_name='schedules')
 
     def __str__(self):
-        return f"Horario {self.id_horario}: {self.dia} de {self.hora_inicio} a {self.hora_fin}"
-
-# Horario Curso
+        return f"Schedule {self.id_schedule}: {self.day} from {self.start_time} to {self.end_time}"
 
 
-class Horario_Curso(models.Model):
-    id_horario_curso = models.AutoField(primary_key=True)
-    id_curso = models.ForeignKey(
-        Curso, on_delete=models.CASCADE, related_name='horarios')
-    id_horario = models.ForeignKey(
-        Horario, on_delete=models.CASCADE, related_name='cursos')
+class CourseSchedule(models.Model):
+    id_course_schedule = models.AutoField(primary_key=True)
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name='schedules')
+    schedule = models.ForeignKey(
+        Schedule, on_delete=models.CASCADE, related_name='courses')
 
     def __str__(self):
-        return f"Horario_Curso {self.id_horario_curso}: Curso {self.id_curso.id_curso} - Horario {self.id_horario.id_horario}"
+        return f"CourseSchedule {self.id_course_schedule}: Course {self.course.id_course} - Schedule {self.schedule.id_schedule}"
