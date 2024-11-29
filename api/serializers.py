@@ -112,10 +112,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TeacherSerializer(serializers.ModelSerializer):
     subjects = SubjectSerializer(many=True, read_only=True)
+    user = UserSerializer()
     class Meta:
         model = Teacher
         fields = '__all__'
-        depth = 1
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')

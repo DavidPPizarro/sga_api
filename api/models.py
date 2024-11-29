@@ -9,6 +9,7 @@ class User(AbstractUser):
 
 
 class Teacher(models.Model):
+    id_teacher = models.AutoField(primary_key=True)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='teacher')
     specialty = models.CharField(max_length=150)
