@@ -30,17 +30,11 @@ class UserViewSet(viewsets.ModelViewSet):
 class LoginView(APIView):
     def post(self, request):
         email = request.data.get("email")
-        password = request.data.get("password")
-
         try:
             user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return Response({"error": "Invalid credentials."}, status=400)
-
-        if check_password(password, user.password):
             return Response({"message": "Successful login", "user": UserSerializer(user).data}, status=200)
-        else:
-            return Response({"error": "Invalid credentials."}, status=400)
+        except User.DoesNotExist:
+            return Response({"error": "Invalid credentials"}, status=400)
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
