@@ -34,7 +34,7 @@ class LoginView(APIView):
             user = User.objects.get(email=email)
             return Response({"message": "Successful login", "user": UserSerializer(user).data}, status=200)
         except User.DoesNotExist:
-            return Response({"error": "Invalid credentials"}, status=400)
+            return Response({"message": "Invalid credentials"}, status=400)
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
