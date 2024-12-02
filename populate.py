@@ -134,6 +134,7 @@ def poblar_matriculas(n):
     """Crea 'n' matrículas ficticias."""
     alumnos = list(Student.objects.all())
     curriculos = list(Curriculum.objects.all())
+    
 
     if not alumnos or not curriculos:
         print("No hay alumnos o currículos disponibles. Por favor, genera datos para ellos primero.")
@@ -143,28 +144,14 @@ def poblar_matriculas(n):
         matricula = Enrollment(
             student=random.choice(alumnos),
             curriculum=random.choice(curriculos),
-            enrollment_date=generar_fecha_aleatoria(2015, date.today().year),
+            enrollment_date=generar_fecha_aleatoria(2023, date.today().year),
             status=random.choice(['active', 'inactive', 'suspended']),
         )
         matricula.save()
+        courses = list(Course.objects.all())
+        addCourses = random.choice(courses)
+        matricula.courses.add(addCourses)
         print(f"Matrícula creada: {matricula}")
-
-def poblar_cursos_matriculas(n):
-    """Crea 'n' relaciones de curso-matricula ficticias."""
-    cursos = list(Course.objects.all())
-    matriculas = list(Enrollment.objects.all())
-
-    if not cursos or not matriculas:
-        print("No hay cursos o matrículas disponibles. Por favor, genera datos para ellos primero.")
-        return
-
-    for _ in range(n):
-        curso_matricula = CourseEnrollment(
-            course=random.choice(cursos),
-            enrollment=random.choice(matriculas)
-        )
-        curso_matricula.save()
-        print(f"Curso-Matricula creado: {curso_matricula}")
 
 
 def poblar_evaluaciones(n):
@@ -305,21 +292,20 @@ def poblar_materias(n):
 
 
 def poblar_todos():
-    # poblar_representantes(50)
-    poblar_alumnos(100)
+    poblar_representantes(50)
+    poblar_alumnos(50)
     poblar_curriculos(3)
-    poblar_cursos(40)
+    poblar_cursos(20)
     poblar_aulas(30)
-    poblar_matriculas(50)
-    poblar_cursos_matriculas(100)
+    poblar_matriculas(150)
     poblar_evaluaciones(10)
     poblar_asistencias(100)
     poblar_horarios(10)
     poblar_horarios_cursos(10)
-    # poblar_grupos()
+    poblar_grupos()
     # poblar_usuarios(10)
-    # poblar_docentes(10)
-    # poblar_materias(10)
+    poblar_docentes(3)
+    poblar_materias(5)
 
 
 poblar_todos()

@@ -108,6 +108,7 @@ class Enrollment(models.Model):
     ]
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default='active')
+    courses =models.ManyToManyField(Course, related_name='enrollments')
 
     def __str__(self):
         return f"Enrollment of {self.student}"
@@ -150,15 +151,6 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"Attendance of {self.student} - {self.date}"
-
-
-class CourseEnrollment(models.Model):
-    id_course_enrollment = models.AutoField(primary_key=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return str(self.id_course_enrollment)
 
 
 class Schedule(models.Model):
