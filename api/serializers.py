@@ -88,6 +88,8 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     groups = serializers.SerializerMethodField()
+    teacher = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = User
@@ -105,6 +107,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_groups(self, obj):
         return [group.name for group in obj.groups.all()]
+
+    def get_teacher(self, obj):
+        try:
+            teacher = Teacher.objects.get(user=obj)
+            return teacher.id_teacher
+        except Teacher.DoesNotExist:
+            return None
 
     def create(self, validated_data):
         user = User.objects.create_user(
