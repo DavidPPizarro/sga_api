@@ -4,19 +4,6 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
 
 
-class SubjectSerializer(serializers.ModelSerializer):
-    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
-    teacher = serializers.PrimaryKeyRelatedField(queryset=Teacher.objects.all())
-    class Meta:
-        model = Subject
-        fields = '__all__'
-        depth = 1
-    def create(self, validated_data):
-        course = validated_data.pop('course')
-        teacher = validated_data.pop('teacher')
-        subject = Subject.objects.create(course=course, teacher=teacher, **validated_data)
-        return subject
-
 class EvaluationSerializer(serializers.ModelSerializer):
     student = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all())
     course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())    
@@ -118,6 +105,25 @@ class CourseSerializer(serializers.ModelSerializer):
         course = Course.objects.create(curriculum=curriculum, **validated_data)
         return course
 
+class CourseDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+class SubjectSerializer(serializers.ModelSerializer):
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all(), write_only=True)
+    course_details = CourseDetailSerializer(source='course', read_only=True)
+    teacher = serializers.PrimaryKeyRelatedField(queryset=Teacher.objects.all(), write_only=True)
+    class Meta:
+        model = Subject
+        fields = '__all__'
+        depth = 1
+    def create(self, validated_data):
+        course = validated_data.pop('course')
+        teacher = validated_data.pop('teacher')
+        subject = Subject.objects.create(course=course, teacher=teacher, **validated_data)
+        return subject
+        
 
 class CourseScheduleSerializer(serializers.ModelSerializer):
     class Meta:
