@@ -61,6 +61,9 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
 
+    def get_queryset(self):
+        return Enrollment.objects.filter(courses__id_course=self.kwargs['course_pk'])
+
 
 class CurriculumViewSet(viewsets.ModelViewSet):
     queryset = Curriculum.objects.all()
@@ -95,4 +98,3 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 class CourseScheduleViewSet(viewsets.ModelViewSet):
     queryset = CourseSchedule.objects.all()
     serializer_class = CourseScheduleSerializer
-

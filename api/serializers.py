@@ -90,9 +90,6 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         return enrollment
 
 class CourseSerializer(serializers.ModelSerializer):
-    enrollments = EnrollmentSerializer(many=True, read_only=True)
-    attendances = AttendanceSerializer(many=True, read_only=True)
-    evaluations = EvaluationSerializer(many=True, read_only=True)
     curriculum = serializers.PrimaryKeyRelatedField(queryset=Curriculum.objects.all())
     
     class Meta:
