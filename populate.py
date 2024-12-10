@@ -308,4 +308,4 @@ def poblar_todos():
     poblar_materias(5)
 
 
-poblar_todos()
+#poblar_todos()

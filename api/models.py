@@ -57,8 +57,7 @@ class Curriculum(models.Model):
         ('deleted', 'Deleted'),
     ]
     status = models.CharField(
-        max_length=10, choices=STATUS_CHOICES, default='inactive')
-    school_year = models.IntegerField()
+        max_length=10, choices=STATUS_CHOICES, default='inactive')    
 
     def __str__(self):
         return f"{self.name} {self.year}"
@@ -70,7 +69,7 @@ class Course(models.Model):
     weekly_hours = models.IntegerField()
     curriculum = models.ForeignKey(
         Curriculum, on_delete=models.CASCADE, related_name='courses')
-
+    school_year = models.IntegerField(null=True)
     def __str__(self):
         return self.name
 
