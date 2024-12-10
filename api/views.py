@@ -98,3 +98,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 class CourseScheduleViewSet(viewsets.ModelViewSet):
     queryset = CourseSchedule.objects.all()
     serializer_class = CourseScheduleSerializer
+
+class AutoEnrollmentViewSet(viewsets.ModelViewSet):
+    queryset = Enrollment.objects.all()
+    serializer_class = AutoEnrollmentSerializer

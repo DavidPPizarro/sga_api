@@ -18,7 +18,7 @@ router.register(r'subjects', SubjectViewSet, 'subjects')
 router.register(r'parents', ParentViewSet, 'parents')
 router.register(r'teachers', TeacherViewSet, 'teachers')
 router.register(r'users', UserViewSet, 'users')
-
+router.register(r'enrollments', AutoEnrollmentViewSet, 'enrollments')
 
 courses_router = NestedSimpleRouter(router, r'courses', lookup='course')
 courses_router.register(r'enrollments', EnrollmentViewSet, basename='course-enrollments')

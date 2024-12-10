@@ -219,3 +219,71 @@ class TeacherSerializer(serializers.ModelSerializer):
         user.groups.add(Group.objects.get(name='Teacher'))
         teacher = Teacher.objects.create(user=user, **validated_data)
         return teacher
+
+class AutoEnrollmentSerializer(serializers.ModelSerializer):
+    school_year = serializers.IntegerField(write_only=True, required=False)
+    enrolled_courses = CourseSerializer(many=True, read_only=True, source='courses')
+    
+    class Meta:
+        model = Enrollment
+        fields = [
+            'id_enrollment', 
+            'student', 
+            'curriculum', 
+            'enrollment_date', 
+            'status', 
+            'school_year',
+            'enrolled_courses'
+        ]
+    
+    def create(self, validated_data):
+        return self._create_or_update(validated_data, is_create=True)
+    
+    def update(self, instance, validated_data):
+        return self._create_or_update(validated_data, instance=instance, is_create=False)
+    
+    def _create_or_update(self, validated_data, instance=None, is_create=False):
+        # Extraer el año escolar si está presente
+        school_year = validated_data.pop('school_year', None)
+        
+        # Obtener la currículum (de los datos de entrada o de la instancia existente)
+        curriculum = validated_data.get('curriculum', getattr(instance, 'curriculum', None))
+        
+        # Si no hay currículum, lanzar error
+        if not curriculum:
+            raise serializers.ValidationError({
+                'curriculum': 'Se requiere una currículum para crear o actualizar la inscripción'
+            })
+        
+        # Si se proporciona año escolar o es una actualización que requiere recalcular cursos
+        if school_year or not is_create:
+            # Buscar cursos de la currículum para el año escolar
+            courses = Course.objects.filter(
+                curriculum=curriculum,
+                school_year=school_year or (instance.courses.first().school_year if instance else None)
+            )
+            
+            # Si no hay cursos, lanzar excepción
+            if not courses.exists():
+                raise serializers.ValidationError({
+                    'school_year': f'No hay cursos encontrados para el año escolar {school_year} en la currículum {curriculum}'
+                })
+        
+        # Crear o actualizar la inscripción
+        if is_create:                    
+            enrollment = Enrollment.objects.create(**validated_data)
+        else:
+            # Actualizar campos de la instancia existente
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+            enrollment = instance
+        
+        # Limpiar y agregar cursos si es necesario
+        if school_year or not is_create:
+            # Limpiar cursos existentes
+            enrollment.courses.clear()
+            # Agregar nuevos cursos
+            enrollment.courses.add(*courses)
+        
+        return enrollment
