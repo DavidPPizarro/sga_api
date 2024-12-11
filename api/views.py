@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from rest_framework.views import APIView
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
+from django_filters import rest_framework as django_filters
 
 from .models import *
 from .serializers import *
@@ -52,10 +53,20 @@ class StudentViewSet(viewsets.ModelViewSet):
     serializer_class = StudentSerializer
 
 
+class CourseFilter(django_filters.FilterSet):
+    school_year = django_filters.NumberFilter(field_name='school_year')
+    curriculum = django_filters.NumberFilter(field_name='curriculum__id_curriculum')
+    
+    class Meta:
+        model = Course
+        fields = ['school_year', 'curriculum']
+        
+
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_class = CourseFilter
 
 class EnrollmentViewSet(viewsets.ModelViewSet):
     queryset = Enrollment.objects.all()
