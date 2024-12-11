@@ -143,12 +143,32 @@ class ScheduleSerializer(serializers.ModelSerializer):
     classroom_details = ClassroomBaseSerializer(source='classroom', read_only=True)
     course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
     course_details = CourseSerializer(source='course', read_only=True)
+    teacher = serializers.SerializerMethodField()
     
     class Meta:
         model = Schedule
         fields = '__all__'
         depth = 1
-
+    
+    def get_teacher(self, obj):
+        # Check if a course is associated with the schedule
+        if obj.course:
+            # Find the subject(s) for this course
+            subjects = Subject.objects.filter(course=obj.course)
+            
+            # If subjects exist, return the first teacher's details
+            if subjects.exists():
+                first_subject = subjects.first()
+                teacher = first_subject.teacher
+                return {
+                    'id_teacher': teacher.id_teacher,
+                    'name': f"{teacher.user.first_name} {teacher.user.last_name}",
+                    'specialty': teacher.specialty
+                }
+        
+        # Return None if no teacher is found
+        return None
+    
     def validate(self, data):
         # Extraer datos necesarios para la validación
         new_start_time = data.get('start_time')
