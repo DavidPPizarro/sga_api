@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
+from django.utils import timezone
 
 
 class EvaluationSerializer(serializers.ModelSerializer):
@@ -121,13 +122,7 @@ class SubjectSerializer(serializers.ModelSerializer):
         subject = Subject.objects.create(course=course, teacher=teacher, **validated_data)
         return subject
         
-
-class CourseScheduleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CourseSchedule
-        fields = '__all__'
-
-
+        
 class CurriculumSerializer(serializers.ModelSerializer):
     courses = CourseSerializer(many=True, read_only=True)
     subjects = SubjectSerializer(many=True, read_only=True)
@@ -146,15 +141,74 @@ class ClassroomBaseSerializer(serializers.ModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     classroom = serializers.PrimaryKeyRelatedField(queryset=Classroom.objects.all())    
     classroom_details = ClassroomBaseSerializer(source='classroom', read_only=True)
-
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
+    course_details = CourseSerializer(source='course', read_only=True)
+    
     class Meta:
         model = Schedule
         fields = '__all__'
         depth = 1
 
+    def validate(self, data):
+        # Extraer datos necesarios para la validación
+        new_start_time = data.get('start_time')
+        new_end_time = data.get('end_time')
+        new_day = data.get('day')
+        new_classroom = data.get('classroom')
+        new_course = data.get('course')
+
+        # Validar que la hora de inicio sea antes de la hora de fin
+        if new_start_time >= new_end_time:
+            raise serializers.ValidationError("La hora de inicio debe ser anterior a la hora de fin")
+
+        # Verificar cruces de horarios en el mismo aula
+        classroom_conflicts = Schedule.objects.filter(
+            classroom=new_classroom,
+            day=new_day,
+            start_time__lt=new_end_time,
+            end_time__gt=new_start_time
+        )
+
+        if classroom_conflicts.exists():
+            conflict = classroom_conflicts.first()
+            raise serializers.ValidationError({
+                'classroom_conflict': {
+                    'curso_en_conflicto': conflict.course.name,
+                    'dia': conflict.day,
+                    'hora_inicio': conflict.start_time.strftime('%H:%M'),
+                    'hora_fin': conflict.end_time.strftime('%H:%M')
+                }
+            })
+
+        # Verificar cruces de horarios para el mismo curso
+        course_conflicts = Schedule.objects.filter(
+            course=new_course,
+            day=new_day,
+            start_time__lt=new_end_time,
+            end_time__gt=new_start_time
+        )
+
+        if course_conflicts.exists():
+            conflict = course_conflicts.first()
+            raise serializers.ValidationError({
+                'course_conflict': {
+                    'aula_en_conflicto': conflict.classroom.name,
+                    'dia': conflict.day,
+                    'hora_inicio': conflict.start_time.strftime('%H:%M'),
+                    'hora_fin': conflict.end_time.strftime('%H:%M')
+                }
+            })
+
+        return data
+
     def create(self, validated_data):
         classroom = validated_data.pop('classroom')
-        schedule = Schedule.objects.create(classroom=classroom, **validated_data)
+        course = validated_data.pop('course')
+        schedule = Schedule.objects.create(
+            classroom=classroom, 
+            course=course, 
+            **validated_data
+        )
         return schedule
 
 class ClassroomSerializer(serializers.ModelSerializer):    

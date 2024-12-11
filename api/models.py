@@ -67,8 +67,7 @@ class Course(models.Model):
     id_course = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     weekly_hours = models.IntegerField()
-    curriculum = models.ForeignKey(
-        Curriculum, on_delete=models.CASCADE, related_name='courses')
+    curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE, related_name='courses')
     school_year = models.IntegerField(null=True)
     def __str__(self):
         return self.name
@@ -155,10 +154,12 @@ class Attendance(models.Model):
 class Schedule(models.Model):
     id_schedule = models.AutoField(primary_key=True)
     day = models.CharField(max_length=15)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
     classroom = models.ForeignKey(
         Classroom, on_delete=models.CASCADE, related_name='schedules')
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name='schedules', null=True)
 
     def __str__(self):
         return f"Schedule {self.id_schedule}: {self.day} from {self.start_time} to {self.end_time}"
@@ -167,9 +168,9 @@ class Schedule(models.Model):
 class CourseSchedule(models.Model):
     id_course_schedule = models.AutoField(primary_key=True)
     course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, related_name='schedules')
+        Course, on_delete=models.CASCADE, related_name='courses_schedules')
     schedule = models.ForeignKey(
-        Schedule, on_delete=models.CASCADE, related_name='courses')
+        Schedule, on_delete=models.CASCADE, related_name='courses_schedules')
 
     def __str__(self):
         return f"CourseSchedule {self.id_course_schedule}: Course {self.course.id_course} - Schedule {self.schedule.id_schedule}"
