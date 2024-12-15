@@ -242,7 +242,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     groups = serializers.SerializerMethodField()
     teacher = serializers.SerializerMethodField()
-    
+    group_name = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
@@ -258,6 +258,12 @@ class UserSerializer(serializers.ModelSerializer):
             raise ValidationError('Email is already registered')
         return value
 
+    def validate_group_name(self, value):
+        valid_groups = ['Management', 'Teacher']
+        if value not in valid_groups:
+            raise ValidationError(f'Group must be one of {valid_groups}')
+        return value
+
     def get_groups(self, obj):
         return [group.name for group in obj.groups.all()]
 
@@ -269,6 +275,7 @@ class UserSerializer(serializers.ModelSerializer):
             return None
 
     def create(self, validated_data):
+        group_name = validated_data.pop('group_name')
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -276,7 +283,10 @@ class UserSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name'],
             password=validated_data['password']
         )
+        group = Group.objects.get(name=group_name)
+        user.groups.add(group)
         return user
+
 
 
 class TeacherSerializer(serializers.ModelSerializer):
