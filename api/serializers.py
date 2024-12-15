@@ -297,18 +297,20 @@ class TeacherSerializer(serializers.ModelSerializer):
 class AutoEnrollmentSerializer(serializers.ModelSerializer):
     school_year = serializers.IntegerField(write_only=True, required=False)
     enrolled_courses = CourseSerializer(many=True, read_only=True, source='courses')
-    
+    student_details = StudentSerializer( read_only=True, source='students')
     class Meta:
         model = Enrollment
         fields = [
             'id_enrollment', 
-            'student', 
+            'student',
+            'student_details', 
             'curriculum', 
             'enrollment_date', 
             'status', 
             'school_year',
             'enrolled_courses'
         ]
+        depth = 1
     
     def create(self, validated_data):
         return self._create_or_update(validated_data, is_create=True)
