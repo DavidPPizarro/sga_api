@@ -10,6 +10,15 @@ The project is an API developed in Django, aimed at facilitating academic manage
 
 <br/>  
 
+### Frontend  
+<div align="center">
+<img src="Imagen1.png" align="center" style="width: 100%" />
+</div>  
+  
+
+- 🔭[The frontend project](https://github.com/Samuelsf22/JGB_Management_Astro_Frontend)  
+  
+
 
 ## My Skill Set  
 
